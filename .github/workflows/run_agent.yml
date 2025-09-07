@@ -1,8 +1,15 @@
-name: Run AI Agent
+name: workflow_dispatch
 
 on:
   repository_dispatch:
     types: [run_agent_workflow]
+    inputs:
+      question:
+        required: true
+      fileData:
+        required: true
+      fileName:
+        required: true
 
 jobs:
   run-agent:
@@ -24,7 +31,5 @@ jobs:
 
       - name: Run the AI agent script
         env:
-          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
-          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        run: python agent.py
+        run: python agent.py --question ${{ github.event.client_payload.question }} --fileData ${{ github.event.client_payload.fileData }} --fileName ${{ github.event.client_payload.fileName }}
