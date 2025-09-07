@@ -1,17 +1,20 @@
-workflow_dispatch:
-This enables the workflow to be triggered via the API.
 name: Run AI Agent
 
 on:
-  repository_dispatch:
-    types: [run_agent_workflow]
+  workflow_dispatch:   # <-- required for n8n dispatch
     inputs:
       question:
+        description: "Question for the AI agent"
         required: true
       fileData:
+        description: "File content"
         required: true
       fileName:
+        description: "File name"
         required: true
+
+  repository_dispatch: # optional, if you also want custom repo dispatch events
+    types: [run_agent_workflow]
 
 jobs:
   run-agent:
@@ -34,4 +37,8 @@ jobs:
       - name: Run the AI agent script
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        run: python agent.py --question ${{ github.event.client_payload.question }} --fileData ${{ github.event.client_payload.fileData }} --fileName ${{ github.event.client_payload.fileName }}
+        run: |
+          python agent.py \
+            --question "${{ github.event.inputs.question || github.event.client_payload.question }}" \
+            --fileData "${{ github.event.inputs.fileData || github.event.client_payload.fileData }}" \
+            --fileName "${{ github.event.inputs.fileName || github.event.client_payload.fileName }}"
