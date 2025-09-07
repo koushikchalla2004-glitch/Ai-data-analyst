@@ -30,7 +30,7 @@ llm = ChatOpenAI(temperature=0, api_key=openai_api_key)
 
 # Initialize the agent with the tool
 agent = initialize_agent(
-    tools=[analyze_sales_data],
+    tools=[run_analysis],
     llm=llm,
     agent=AgentType.CHAT_ZERO_SHOT_REACT_DESCRIPTION,
     verbose=True,
